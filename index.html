@@ -2,147 +2,106 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>2025 台灣恩慈尾牙留言板</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600&display=swap" rel="stylesheet">
     <style>
+        :root { --gold-main: #c49a28; }
+
         body { 
             background-color: #050505; 
-            color: #c49a28; 
-            font-family: 'Noto Serif TC', serif; 
+            margin: 0; 
             display: flex; 
-            flex-direction: column; 
             align-items: center; 
             justify-content: center; 
             min-height: 100vh; 
-            margin: 0; 
-            padding: 20px;
-            box-sizing: border-box;
+            overflow: hidden; /* 防止手機橡皮筋回彈 */
+            font-family: 'Noto Serif TC', serif;
         }
 
+        /* === 浮水印層：獨立 DIV 確保顯現 === */
+        #watermark-layer {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1; /* 放在背景之上 */
+            /* 稍微加深顏色到 0.1 確保肉眼可見 */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='150' viewBox='0 0 250 150'%3E%3Ctext x='0' y='80' fill='rgba(196, 154, 40, 0.1)' font-family='Arial' font-size='16' transform='rotate(-25 125 75)'%3ETAIWAN GRACE%3C/text%3E%3C/svg%3E");
+            background-repeat: repeat;
+            pointer-events: none;
+        }
+
+        /* 粒子背景層 */
+        .bg-particles {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 2; pointer-events: none;
+        }
+        .particle {
+            position: absolute; border-radius: 50%;
+            background: rgba(196, 154, 40, 0.4);
+            animation: float 15s infinite linear;
+        }
+        @keyframes float {
+            0% { transform: translateY(110vh) translateX(0); opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { transform: translateY(-10vh) translateX(30px); opacity: 0; }
+        }
+
+        /* 內容容器 */
         .container {
-            width: 100%;
+            position: relative;
+            z-index: 10; /* 確保在最前方 */
+            width: 85%;
             max-width: 400px;
-            padding: 30px 20px;
-            border: 1px solid rgba(196, 154, 40, 0.3);
-            background: rgba(20, 20, 20, 0.8);
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(196, 154, 40, 0.1);
+            padding: 40px 25px;
+            border: 1px solid rgba(196, 154, 40, 0.4);
+            background: rgba(15, 15, 15, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.9);
             text-align: center;
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
         }
 
         h2 { 
-            font-size: 22px; 
-            margin-bottom: 10px; 
+            font-size: 26px; margin: 0 0 15px 0; 
             background: linear-gradient(135deg, #ffecb3, #c49a28);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
 
-        p { 
-            font-size: 14px; 
-            color: #a0a0a0; 
-            line-height: 1.6; 
-            margin-bottom: 25px; 
-        }
+        p { font-size: 14px; color: #bbb; line-height: 1.6; margin-bottom: 30px; }
 
         input { 
-            width: 100%; 
-            padding: 15px; 
-            border: 1px solid #c49a28; 
-            background: #111; 
-            color: #fff; 
-            border-radius: 8px; 
-            font-size: 16px; 
-            box-sizing: border-box;
-            outline: none;
-            transition: box-shadow 0.3s;
+            width: 100%; padding: 16px; border: 1px solid var(--gold-main); 
+            background: #000; color: #fff; border-radius: 10px; 
+            font-size: 16px; box-sizing: border-box; outline: none;
+            -webkit-appearance: none; /* 移除 iOS 預設陰影 */
         }
 
-        input:focus {
-            box-shadow: 0 0 10px rgba(196, 154, 40, 0.5);
-        }
-
-        .hint {
-            font-size: 12px;
-            color: #666;
-            margin-top: 8px;
-            text-align: left;
-        }
+        .hint { font-size: 12px; color: #777; margin-top: 12px; text-align: left; }
 
         button { 
-            margin-top: 30px; 
-            width: 100%;
-            padding: 15px; 
+            margin-top: 30px; width: 100%; padding: 18px; 
             background: linear-gradient(135deg, #c49a28, #8c6d1c); 
-            color: #000; 
-            border: none; 
-            font-weight: bold; 
-            border-radius: 8px; 
-            font-size: 18px; 
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            transition: transform 0.2s, brightness 0.2s;
+            color: #000; border: none; font-weight: 900; 
+            border-radius: 10px; font-size: 18px; cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
         }
-
-        button:active {
-            transform: scale(0.98);
-            brightness: 1.2;
-        }
-/* 新增：漂浮星塵背景 */
-.bg-particles {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    z-index: -1; overflow: hidden; background: #050505;
-}
-.particle {
-    position: absolute; border-radius: 50%;
-    background: rgba(196, 154, 40, 0.4);
-    animation: float 15s infinite linear;
-}
-@keyframes float {
-    0% { transform: translateY(110vh) translateX(0); opacity: 0; }
-    50% { opacity: 0.8; }
-    100% { transform: translateY(-10vh) translateX(50px); opacity: 0; }
-}
-.bg-scanlines {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    z-index: -1; background: linear-gradient(to bottom, #050505, #111);
-}
-.line {
-    position: absolute; width: 100%; height: 1px;
-    background: linear-gradient(90deg, transparent, var(--gold-main), transparent);
-    opacity: 0.2; animation: scan 8s infinite linear;
-}
-@keyframes scan {
-    from { top: -10%; }
-    to { top: 110%; }
-}
+        button:active { transform: scale(0.97); }
     </style>
 </head>
 <body>
-<div class="bg-particles" id="particle-container"></div>
-<div class="container"> ... </div>
 
-<script>
-    // 自動產生背景小點
-    const container = document.getElementById('particle-container');
-    for (let i = 0; i < 20; i++) {
-        const p = document.createElement('div');
-        p.className = 'particle';
-        const size = Math.random() * 5 + 2 + 'px';
-        p.style.width = size; p.style.height = size;
-        p.style.left = Math.random() * 100 + 'vw';
-        p.style.animationDuration = (Math.random() * 10 + 10) + 's';
-        p.style.animationDelay = (Math.random() * 10) + 's';
-        container.appendChild(p);
-    }
-</script>
+    <div id="watermark-layer"></div>
+
+    <div class="bg-particles" id="particle-container"></div>
+
     <div class="container">
         <h2>恩慈許願池</h2>
-        <p>讓您的話語化作流星，閃耀在恩慈尾牙盛宴。<br>寫下想說的話，我們幫你送上大螢幕 ✨</p>
+        <p>讓您的話語化作流星，閃耀在恩慈尾牙盛宴！<br>寫下想說的話，我們幫你送上大螢幕 ✨</p>
         
-        <input type="text" id="msg" placeholder="輸入心情（限20字）" maxlength="20">
-        <div class="hint">💡 歡迎使用表情符號 🥳🧧🏮</div>
+        <input type="text" id="msg" placeholder="輸入內容（限 20 字）" maxlength="20">
+        <div class="hint">💡 歡迎使用 🥳 🧧 🏮 🍺</div>
         
         <button onclick="send()">點亮大螢幕</button>
     </div>
@@ -151,7 +110,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // Firebase 設定
         const firebaseConfig = {
             apiKey: "AIzaSyAbgicIQNbQhUvNND0ML-NpjGqI39pSFiA",
             authDomain: "grace-2025.firebaseapp.com",
@@ -175,10 +133,23 @@
                 time: Date.now() 
             }).then(() => {
                 document.getElementById('msg').value = "";
-                alert("發送成功！請看大螢幕 🚀");
-            }).catch((error) => {
-                alert("發送失敗，請檢查網路連線");
+                alert("發送成功！快看大螢幕 🚀");
+            }).catch(() => {
+                alert("傳送失敗，請檢查網路連線");
             });
+        }
+
+        // 動態生成粒子邏輯
+        const pContainer = document.getElementById('particle-container');
+        for (let i = 0; i < 15; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            const size = Math.random() * 4 + 2 + 'px';
+            p.style.width = size; p.style.height = size;
+            p.style.left = Math.random() * 100 + 'vw';
+            p.style.animationDuration = (Math.random() * 10 + 10) + 's';
+            p.style.animationDelay = (Math.random() * 5) + 's';
+            pContainer.appendChild(p);
         }
     </script>
 </body>
