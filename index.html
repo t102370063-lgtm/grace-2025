@@ -89,10 +89,54 @@
             transform: scale(0.98);
             brightness: 1.2;
         }
+/* 新增：漂浮星塵背景 */
+.bg-particles {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    z-index: -1; overflow: hidden; background: #050505;
+}
+.particle {
+    position: absolute; border-radius: 50%;
+    background: rgba(196, 154, 40, 0.4);
+    animation: float 15s infinite linear;
+}
+@keyframes float {
+    0% { transform: translateY(110vh) translateX(0); opacity: 0; }
+    50% { opacity: 0.8; }
+    100% { transform: translateY(-10vh) translateX(50px); opacity: 0; }
+}
+.bg-scanlines {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    z-index: -1; background: linear-gradient(to bottom, #050505, #111);
+}
+.line {
+    position: absolute; width: 100%; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold-main), transparent);
+    opacity: 0.2; animation: scan 8s infinite linear;
+}
+@keyframes scan {
+    from { top: -10%; }
+    to { top: 110%; }
+}
     </style>
 </head>
 <body>
+<div class="bg-particles" id="particle-container"></div>
+<div class="container"> ... </div>
 
+<script>
+    // 自動產生背景小點
+    const container = document.getElementById('particle-container');
+    for (let i = 0; i < 20; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        const size = Math.random() * 5 + 2 + 'px';
+        p.style.width = size; p.style.height = size;
+        p.style.left = Math.random() * 100 + 'vw';
+        p.style.animationDuration = (Math.random() * 10 + 10) + 's';
+        p.style.animationDelay = (Math.random() * 10) + 's';
+        container.appendChild(p);
+    }
+</script>
     <div class="container">
         <h2>恩慈許願池</h2>
         <p>讓您的話語化作流星，閃耀在恩慈尾牙盛宴。<br>寫下想說的話，我們幫你送上大螢幕 ✨</p>
